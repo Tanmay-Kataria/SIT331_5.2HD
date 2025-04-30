@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+  // Remove deprecated preview feature
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Artist {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  bio         String
+  nationality String
+  artworks    Artwork[]
+}
+
+model Artwork {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  imageUrl    String?
+  creationYear Int
+  artist      Artist     @relation(fields: [artistId], references: [id])
+  artistId    String     @db.ObjectId
+  symbol      AboriginalSymbol? @relation(fields: [symbolId], references: [id])
+  symbolId    String?    @db.ObjectId
+  exhibition  Exhibition? @relation(fields: [exhibitionId], references: [id])
+  exhibitionId String?   @db.ObjectId
+  comments    Comment[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Exhibition {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  location    Json       // Removed @db.GeoJSON (use raw JSON for MongoDB geospatial)
+  artworks    Artwork[]
+  startDate   DateTime
+  endDate     DateTime
+}
+
+model AboriginalSymbol {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  meaning     String
+  tribe       String
+  artworks    Artwork[]  // Added inverse relation
+}
+
+model User {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  auth0Id     String    @unique
+  role        String    @default("USER")
+  comments    Comment[]
+}
+
+model Comment {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  content     String
+  artwork     Artwork   @relation(fields: [artworkId], references: [id])
+  artworkId   String    @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String    @db.ObjectId
+}
