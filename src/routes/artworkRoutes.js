@@ -1,6 +1,6 @@
 // src/routes/artworkRoutes.js
 import express from 'express';
-import { checkJwt, checkRole } from '../middleware/auth.js';
+import { checkJwt, checkPermission, checkRole } from '../middleware/auth.js';
 import { validateArtwork } from '../middleware/validation.js';
 import {
   createArtwork,
@@ -22,7 +22,7 @@ router.get('/:id', getArtworkById);
 router.post(
   '/',
   checkJwt,
-  checkRole('ADMIN'),
+  checkPermission('write:artwork'),
   validateArtwork,
   createArtwork
 );
@@ -31,7 +31,7 @@ router.post(
 router.put(
   '/:id',
   checkJwt,
-  checkRole('ADMIN'),
+  checkPermission('write:artwork'),
   validateArtwork,
   updateArtwork
 );
@@ -40,7 +40,7 @@ router.put(
 router.delete(
   '/:id',
   checkJwt,
-  checkRole('ADMIN'),
+  checkPermission('delete:artwork'),
   deleteArtwork
 );
 

@@ -21,10 +21,27 @@ export const checkRole = (role) => (req, res, next) => {
   }
   res.status(403).json({ error: 'Insufficient permissions' });
 };
-export const checkPermission = (permission) => (req, res, next) => {
-  const permissions = req.auth?.payload?.permissions || [];
-  if (permissions.includes(permission)) {
+
+export const checkPermission = (requiredPermission) => (req, res, next) => {
+  const tokenPayload = req.auth?.payload || {};
+  
+  // Check both Auth0 permissions array and OAuth scope string
+  const hasPermission = 
+    tokenPayload.permissions?.includes(requiredPermission) ||
+    tokenPayload.scope?.split(' ').includes(requiredPermission);
+
+  if (hasPermission) {
     return next();
   }
-  res.status(403).json({ error: `Requires ${permission} permission` });
+
+  // Detailed error response
+  res.status(403).json({
+    error: 'Insufficient permissions',
+    required: requiredPermission,
+    available: {
+      permissions: tokenPayload.permissions || [],
+      scopes: tokenPayload.scope?.split(' ') || []
+    },
+    decoded_token: tokenPayload // For debugging
+  });
 };
