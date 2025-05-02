@@ -1,15 +1,10 @@
+// src/routes/authRoutes.js
 import { Router } from 'express';
-import { auth } from '../config/auth.js';
-import jwt from 'express-jwt';
+import { handleAuth } from '../controllers/authController.js';
 
 const router = Router();
 
-// Auth0 token endpoint (mock)
-router.get('/token', (req, res) => {
-  res.json({ 
-    access_token: 'mock-token',
-    expires_in: 3600
-  });
-});
+// OAuth2-style token endpoint
+router.post('/oauth/token', handleAuth);
 
 export default router;
