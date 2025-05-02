@@ -1,3 +1,5 @@
+// config/auth.js
+
 export const auth = {
     issuer: process.env.AUTH0_ISSUER,
     audience: process.env.AUTH0_AUDIENCE,

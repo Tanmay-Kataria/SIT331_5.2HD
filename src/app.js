@@ -20,7 +20,6 @@ setupSwagger(app);
 
 // Public Routes (Authentication)
 app.use('/auth', authRoutes);
-app.use('/oauth/token', authRoutes);
 
 // Authenticated Routes
 app.use('/api/artists', checkJwt, artistRoutes);
